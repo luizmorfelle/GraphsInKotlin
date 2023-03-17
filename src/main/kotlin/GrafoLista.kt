@@ -1,0 +1,2 @@
+class GrafoLista : Grafo() {
+}
