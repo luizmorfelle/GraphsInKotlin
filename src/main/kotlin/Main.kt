@@ -13,6 +13,7 @@ fun main(args: Array<String>) {
     g.inserirAresta(1,2)
     g.inserirAresta(1,3)
     g.inserirAresta(3,2)
+    g.inserirAresta(3,2)
     g.inserirAresta(2,4)
     g.inserirAresta(4,2)
     g.inserirAresta(1,100) // Index que não existe
@@ -22,8 +23,8 @@ fun main(args: Array<String>) {
     g.imprimeGrafoLista()
     g.imprimeGrafoMatriz()
 
-    println(if (g.existeAresta(0,1)) "Aresta Existe" else "Areas não existe")
-    println(if (g.existeAresta(0,100)) "Aresta Existe" else "Areas não existe") // Index que não existe
+    println(if (g.existeAresta(0,1)) "Aresta Existe" else "Aresta não existe")
+    println(if (g.existeAresta(0,100)) "Aresta Existe" else "Aresta não existe") // Index que não existe
 
     println(g.retornarVizinhos(0))
     println(g.retornarVizinhos(10000)) // Index que não existe
@@ -36,6 +37,12 @@ fun main(args: Array<String>) {
 
     g.removerVertice("A")
     g.removerVertice("Z") // nome que não existe
+
+    g.imprimeGrafoLista()
+    g.imprimeGrafoMatriz()
+
+    g.removerAresta(0,1)
+    g.removerAresta(0,1000) // index não existe
 
     g.imprimeGrafoLista()
     g.imprimeGrafoMatriz()

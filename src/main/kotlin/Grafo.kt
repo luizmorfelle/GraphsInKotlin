@@ -31,7 +31,6 @@ open class Grafo(open val direcionado: Boolean = true, open val ponderado: Boole
         return -1
     }
 
-    fun vizinhos(name: String) = vertices[name]?.vizinhos?.map { it.key.nome } ?: listOf()
 
     open fun imprimeGrafo() {
         for (vertice in vertices) {
