@@ -1,4 +1,4 @@
-open class Grafo(open val direcionado: Boolean = true, open val ponderado: Boolean = true) {
+open class Grafo(open var direcionado: Boolean = true, open var ponderado: Boolean = true) {
 
 
     data class Vertice(val nome: String) {
@@ -11,7 +11,7 @@ open class Grafo(open val direcionado: Boolean = true, open val ponderado: Boole
 
     val vertices = mutableMapOf<String, Vertice>()
 
-    private operator fun get(nome: String) = vertices[nome] ?: throw IllegalArgumentException()
+    operator fun get(nome: String) = vertices[nome] ?: throw IllegalArgumentException()
 
     private fun labelVertice(indice: Int): String? {
         for ((index, value) in vertices.values.withIndex()) {
@@ -20,11 +20,11 @@ open class Grafo(open val direcionado: Boolean = true, open val ponderado: Boole
         return null
     }
 
-    private fun getVerticeByIndex(indice: Int): Vertice? {
+    fun getVerticeByIndex(indice: Int): Vertice? {
         return vertices[labelVertice(indice)]
     }
 
-    private fun getIndexByVertice(vertice: Vertice): Int {
+    fun getIndexByVertice(vertice: Vertice): Int {
         for ((index, value) in vertices.values.withIndex()) {
             if (value == vertice) return index
         }

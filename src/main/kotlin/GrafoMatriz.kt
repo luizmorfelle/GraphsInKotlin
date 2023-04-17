@@ -1,4 +1,4 @@
-class GrafoMatriz(override val direcionado: Boolean = true, override val ponderado: Boolean = true) : Grafo() {
+class GrafoMatriz(override var direcionado: Boolean = true, override var ponderado: Boolean = true) : Grafo() {
     override fun imprimeGrafo() {
         print("  ")
         vertices.forEach { (label, _) -> print("$label ") }
