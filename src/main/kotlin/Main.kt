@@ -4,7 +4,8 @@ fun main(args: Array<String>) {
     g.imprimeGrafoLista()
     g.imprimeGrafoMatriz()
 
-    println(Busca().buscaProfundidade(g,0,5))
+//    println(Busca().buscaProfundidade(g,0,12))
+    println(Busca().dijkstra(g,0))
 
 //    println(if (g.existeAresta(0, 1)) "Aresta Existe" else "Aresta não existe")
 //    println(if (g.existeAresta(0, 100)) "Aresta Existe" else "Aresta não existe") // Index que não existe
@@ -33,7 +34,7 @@ fun main(args: Array<String>) {
 
 fun getGrafo(byFile: Boolean): Grafo? {
     if (byFile) {
-        return Leitor().getGrafoByFile("grafo2")
+        return Leitor().getGrafoByFile("grafo4")
     }
     val g = Grafo(direcionado = false, ponderado = false)
     g.adicionarVertice("A") //Inserir Vértice
