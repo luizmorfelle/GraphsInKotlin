@@ -9,10 +9,11 @@ open class Grafo(open var direcionado: Boolean = true, open var ponderado: Boole
     data class Vertice(val nome: String) {
         val vizinhos = mutableMapOf<Vertice, Int>()
         var cor = 0
-
+        var saturacao = 0
         fun calculaSaturacao(): Int {
-            return this.vizinhos.map { it.key.cor }.distinct().filter { it != 0 }.count()
+            return this.vizinhos.map { it.key.cor }.distinct().count { it != 0 }
         }
+
         override fun toString(): String {
             return "$nome - VIZ: ${vizinhos.size} - COR: $cor - SAT: ${calculaSaturacao()} \n"
         }
@@ -177,6 +178,40 @@ open class Grafo(open var direcionado: Boolean = true, open var ponderado: Boole
     fun retornarIndicesVizinhos(indice: Int): List<Int> {
         val vertice = getVerticeByIndex(indice) ?: return mutableListOf()
         return vertice.vizinhos.keys.map { getIndexByVertice(it) }
+    }
+
+    fun k5(): Boolean {
+
+        val lista = mutableListOf<Vertice>()
+
+        for (v1 in vertices) {
+            lista.add(v1)
+            lista.addAll(v1.vizinhos.keys)
+            for (v2 in v1.vizinhos.keys) {
+                if (!lista.containsAll(v2.vizinhos.keys)) {
+                    continue
+                }
+                for (v3 in v2.vizinhos.keys) {
+                    if (!lista.containsAll(v3.vizinhos.keys)) {
+                        continue
+                    }
+                    for (v4 in v3.vizinhos.keys) {
+                        if (!lista.containsAll(v4.vizinhos.keys)) {
+                            continue
+                        }
+                        for (v5 in v4.vizinhos.keys) {
+                            if (!lista.containsAll(v5.vizinhos.keys)) {
+                                continue
+                            }
+                            return true
+                        }
+                    }
+                }
+            }
+
+        }
+
+        return false
     }
 
     fun contemSubGrafo3(): Boolean {

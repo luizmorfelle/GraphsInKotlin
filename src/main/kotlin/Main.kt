@@ -1,17 +1,16 @@
 fun main(args: Array<String>) {
     val g = getGrafo(true) ?: return
 
-    g.imprimeGrafoLista()
-    g.imprimeGrafoMatriz()
-
 //    println(Busca().buscaProfundidade(g,0,12))
 //    println(Busca().dijkstra(g,0))
 //   println(Euler.getFacesEuler(g))
 //    g.getFaces().forEach {
 //        println(it.label)
 //    }
+//    Planaridade.verificaPlanaridade(g)
+    Coloracao.welshPowell(g)
+    g.vertices.forEach { it.cor = 0 }
     Coloracao.dsatur(g)
-    println(g)
 //    println(if (g.existeAresta(0, 1)) "Aresta Existe" else "Aresta não existe")
 //    println(if (g.existeAresta(0, 100)) "Aresta Existe" else "Aresta não existe") // Index que não existe
 //
@@ -39,7 +38,7 @@ fun main(args: Array<String>) {
 
 fun getGrafo(byFile: Boolean): Grafo? {
     if (byFile) {
-        return Leitor().getGrafoByFile("grafo9")
+        return Leitor().getGrafoByFile("C4000-260-X")
     }
     val g = Grafo(direcionado = false, ponderado = false)
     g.adicionarVertice("A") //Inserir Vértice

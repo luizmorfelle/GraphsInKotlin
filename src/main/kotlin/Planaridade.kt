@@ -1,13 +1,28 @@
 class Planaridade {
     companion object {
-        fun verificaPlanaridade(grafo: Grafo): Boolean {
-            if (grafo.vertices.size <= 2) return true
-
-            return if (grafo.contemSubGrafo3()) {
-                grafo.getArestas().size <= (grafo.vertices.size * 3 - 6)
-            } else {
-                grafo.getArestas().size <= (grafo.vertices.size * 2 - 4)
+        fun verificaPlanaridade(grafo: Grafo) {
+            println("--- Planaridade ---")
+            val startTime = System.currentTimeMillis()
+            if (grafo.vertices.size <= 2) {
+                println("É Planar")
             }
+
+            if (grafo.contemSubGrafo3()) {
+                if (grafo.getArestas().size <= (grafo.vertices.size * 3 - 6)) {
+                    println("Possívelmente Planar")
+                } else {
+                    println("Não é planar")
+                }
+            } else {
+
+                if (grafo.getArestas().size <= (grafo.vertices.size * 2 - 4)) {
+                    println("Possívelmente Planar")
+                } else {
+                    println("Não é planar")
+                }
+            }
+            val endTime = System.currentTimeMillis()
+            println("Tempo: ${endTime - startTime} ms")
         }
 
     }
