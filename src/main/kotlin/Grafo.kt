@@ -1,31 +1,71 @@
+import java.util.Collections
+
 open class Grafo(open var direcionado: Boolean = true, open var ponderado: Boolean = true) {
 
+    override fun toString(): String {
+        return vertices.toString()
+    }
 
     data class Vertice(val nome: String) {
         val vizinhos = mutableMapOf<Vertice, Int>()
+        var cor = 0
+
+        fun calculaSaturacao(): Int {
+            return this.vizinhos.map { it.key.cor }.distinct().filter { it != 0 }.count()
+        }
         override fun toString(): String {
-            return nome
+            return "$nome - VIZ: ${vizinhos.size} - COR: $cor - SAT: ${calculaSaturacao()} \n"
         }
 
     }
 
-    val vertices = mutableMapOf<String, Vertice>()
+    data class Face(val label: String, val vertices: MutableList<Vertice>) {
+        override fun toString(): String {
+            return label
+        }
 
-    operator fun get(nome: String) = vertices[nome] ?: throw IllegalArgumentException()
+    }
+
+    val vertices = mutableListOf<Vertice>()
+
+    fun getFaces(): MutableList<Face> {
+        val lista = mutableListOf<Face>()
+        vertices.forEach { pontoPartida ->
+            pontoPartida.vizinhos.forEach { primerioVizinho ->
+                primerioVizinho.key.vizinhos.forEach { segundoVizinho ->
+                    if (segundoVizinho.key != pontoPartida && segundoVizinho.key.vizinhos.containsKey(pontoPartida)) {
+                        val verticesFace = mutableListOf(pontoPartida, primerioVizinho.key, segundoVizinho.key)
+                        val face = Face(verticesFace.joinToString(separator = "-") { it.nome }, verticesFace)
+                        if (lista.find {
+                                it.label.contains(pontoPartida.nome) &&
+                                        it.label.contains(primerioVizinho.key.nome) &&
+                                        it.label.contains(segundoVizinho.key.nome)
+                            } == null) {
+                            lista.add(face)
+                        }
+                    }
+                }
+            }
+
+        }
+        return lista
+    }
+
+    operator fun get(nome: String) = vertices.find { it.nome == nome } ?: throw IllegalArgumentException()
 
     private fun labelVertice(indice: Int): String? {
-        for ((index, value) in vertices.values.withIndex()) {
+        for ((index, value) in vertices.withIndex()) {
             if (index == indice) return value.nome
         }
         return null
     }
 
     fun getVerticeByIndex(indice: Int): Vertice? {
-        return vertices[labelVertice(indice)]
+        return vertices[indice]
     }
 
     fun getIndexByVertice(vertice: Vertice): Int {
-        for ((index, value) in vertices.values.withIndex()) {
+        for ((index, value) in vertices.withIndex()) {
             if (value == vertice) return index
         }
         return -1
@@ -34,14 +74,14 @@ open class Grafo(open var direcionado: Boolean = true, open var ponderado: Boole
 
     open fun imprimeGrafo() {
         for (vertice in vertices) {
-            println(vertice.key + " " + vertice.value.vizinhos.map { it.key.nome })
+            println(vertice.nome + " " + vertice.vizinhos.map { it.key.nome })
         }
     }
 
     open fun imprimeGrafoLista() {
         println("-----------------------------")
         for (vertice in vertices) {
-            println(vertice.key + " " + vertice.value.vizinhos.map { it.key.nome })
+            println(vertice.nome + " " + vertice.vizinhos.map { it.key.nome })
         }
         println()
     }
@@ -49,17 +89,34 @@ open class Grafo(open var direcionado: Boolean = true, open var ponderado: Boole
     fun imprimeGrafoMatriz() {
         println("-----------------------------")
         print("  ")
-        vertices.forEach { (label, _) -> print("$label ") }
+        vertices.forEach { (label) -> print("$label ") }
         println()
         for (verticeX in vertices) {
-            print("${verticeX.key} ")
+            print("${verticeX.nome} ")
             for (verticeY in vertices) {
-                if (verticeX.value.vizinhos.containsKey(verticeY.value)) print("1 ")
+                if (verticeX.vizinhos.containsKey(verticeY)) print("1 ")
                 else print("0 ")
             }
             println()
         }
         println()
+    }
+
+    fun getArestas(): MutableList<MutableMap<Vertice, Vertice>> {
+        val arestas = mutableListOf<MutableMap<Vertice, Vertice>>()
+        vertices.forEach { origem ->
+            origem.vizinhos.forEach { destino ->
+                if (
+                    arestas.none {
+                        (it.containsKey(origem) && it.containsValue(destino.key)) ||
+                                (it.containsKey(destino.key) && it.containsValue(origem))
+                    }
+                ) {
+                    arestas.add(mutableMapOf(Pair(origem, destino.key)))
+                }
+            }
+        }
+        return arestas
     }
 
     fun inserirAresta(origem: Int, destino: Int, peso: Int = 1) {
@@ -84,13 +141,13 @@ open class Grafo(open var direcionado: Boolean = true, open var ponderado: Boole
     }
 
     fun adicionarVertice(nome: String) {
-        vertices[nome] = Vertice(nome)
+        vertices.add(Vertice(nome))
     }
 
     fun removerVertice(nome: String) {
-        val verticeRemover = vertices[nome]
-        vertices.remove(nome)
-        for (vertice in vertices.values) {
+        val verticeRemover = vertices.find { it.nome == nome }
+        vertices.remove(verticeRemover)
+        for (vertice in vertices) {
             vertice.vizinhos.remove(verticeRemover)
         }
     }
@@ -121,4 +178,19 @@ open class Grafo(open var direcionado: Boolean = true, open var ponderado: Boole
         val vertice = getVerticeByIndex(indice) ?: return mutableListOf()
         return vertice.vizinhos.keys.map { getIndexByVertice(it) }
     }
+
+    fun contemSubGrafo3(): Boolean {
+        vertices.forEach { pontoPartida ->
+            pontoPartida.vizinhos.forEach { primerioVizinho ->
+                primerioVizinho.key.vizinhos.forEach { segundoVizinho ->
+                    if (segundoVizinho.key != pontoPartida && segundoVizinho.key.vizinhos.containsKey(pontoPartida)) {
+                        return true
+                    }
+                }
+            }
+
+        }
+        return false
+    }
+
 }

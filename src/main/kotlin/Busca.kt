@@ -47,7 +47,9 @@ class Busca {
 
         val verticeOrigem = grafo.getVerticeByIndex(indexOrigem) ?: return null
         val distancias = mutableMapOf<Grafo.Vertice, Int>()
-        for (vertice in grafo.vertices.values) {
+        val anteriores = mutableMapOf<Grafo.Vertice, Grafo.Vertice>()
+
+        for (vertice in grafo.vertices) {
             distancias[vertice] = Int.MAX_VALUE
         }
 
@@ -64,10 +66,13 @@ class Busca {
                 val distanciaNova: Int = distancias[mapMinVertice.key]?.plus(vizinho.value) ?: continue
                 if (distancias[vizinho.key]!! > distanciaNova) {
                     distancias[vizinho.key] = distanciaNova
+                    anteriores[vizinho.key] = mapMinVertice.key
                 }
             }
 
         }
+
+        println(anteriores)
         return distancias
     }
 
