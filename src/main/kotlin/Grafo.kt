@@ -1,5 +1,3 @@
-import java.util.Collections
-
 open class Grafo(open var direcionado: Boolean = true, open var ponderado: Boolean = true) {
 
     override fun toString(): String {
@@ -18,7 +16,14 @@ open class Grafo(open var direcionado: Boolean = true, open var ponderado: Boole
             return "$nome - VIZ: ${vizinhos.size} - COR: $cor - SAT: ${calculaSaturacao()} \n"
         }
 
+        fun clone(): Vertice {
+            val clone = Vertice(this.nome)
+            clone.vizinhos.putAll(vizinhos)
+            return clone
+        }
+
     }
+
 
     data class Face(val label: String, val vertices: MutableList<Vertice>) {
         override fun toString(): String {
@@ -27,7 +32,8 @@ open class Grafo(open var direcionado: Boolean = true, open var ponderado: Boole
 
     }
 
-    val vertices = mutableListOf<Vertice>()
+    var vertices = mutableListOf<Vertice>()
+
 
     fun getFaces(): MutableList<Face> {
         val lista = mutableListOf<Face>()
@@ -103,21 +109,15 @@ open class Grafo(open var direcionado: Boolean = true, open var ponderado: Boole
         println()
     }
 
-    fun getArestas(): MutableList<MutableMap<Vertice, Vertice>> {
-        val arestas = mutableListOf<MutableMap<Vertice, Vertice>>()
+    fun getArestas(): MutableList<Pair<Vertice, Vertice>> {
+        val arestas = mutableListOf<Pair<Vertice, Vertice>>()
         vertices.forEach { origem ->
             origem.vizinhos.forEach { destino ->
-                if (
-                    arestas.none {
-                        (it.containsKey(origem) && it.containsValue(destino.key)) ||
-                                (it.containsKey(destino.key) && it.containsValue(origem))
-                    }
-                ) {
-                    arestas.add(mutableMapOf(Pair(origem, destino.key)))
-                }
+                arestas.add(Pair(origem, destino.key))
             }
         }
-        return arestas
+        return arestas.distinct().toMutableList()
+
     }
 
     fun inserirAresta(origem: Int, destino: Int, peso: Int = 1) {
@@ -180,6 +180,7 @@ open class Grafo(open var direcionado: Boolean = true, open var ponderado: Boole
         return vertice.vizinhos.keys.map { getIndexByVertice(it) }
     }
 
+
     fun k5(): Boolean {
 
         val lista = mutableListOf<Vertice>()
@@ -212,6 +213,14 @@ open class Grafo(open var direcionado: Boolean = true, open var ponderado: Boole
         }
 
         return false
+    }
+
+    fun clone(): Grafo {
+        val clone = Grafo(direcionado = this.direcionado, ponderado = this.ponderado)
+        for (vertice in vertices) {
+            clone.vertices.add(vertice)
+        }
+        return clone
     }
 
     fun contemSubGrafo3(): Boolean {

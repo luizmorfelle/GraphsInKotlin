@@ -1,39 +1,51 @@
 class Busca {
 
-    private var visitados = mutableSetOf<String>()
+    private var visitados = mutableSetOf<Grafo.Vertice>()
+    private var caminho = mutableListOf<Pair<Grafo.Vertice, Grafo.Vertice>>()
 
-    fun buscaProfundidade(grafo: Grafo, indexOrigem: Int, indexDestino: Int): MutableSet<String> {
-        val verticeOrigem = grafo.getVerticeByIndex(indexOrigem) ?: return visitados
+    fun buscaProfundidade(
+        grafo: Grafo,
+        indexOrigem: Int,
+        indexDestino: Int,
+        anterior: Grafo.Vertice? = null
+    ): MutableList<Pair<Grafo.Vertice, Grafo.Vertice>> {
+        try {
+            val verticeOrigem = grafo.getVerticeByIndex(indexOrigem) ?: return caminho
 
-        visitados.add(verticeOrigem.nome)
+            visitados.add(verticeOrigem)
+            if (anterior != null) caminho.add(Pair(anterior, verticeOrigem))
+            if (indexOrigem == indexDestino || visitados.size == grafo.vertices.size) return caminho
 
-        if (indexOrigem == indexDestino || visitados.size == grafo.vertices.size) return visitados
+            val vizinhosNaoVisitados = verticeOrigem.vizinhos.filter { !visitados.contains(it.key) }
 
-        val vizinhosNaoVisitados = verticeOrigem.vizinhos.filter { !visitados.contains(it.key.nome) }
+            if (vizinhosNaoVisitados.isEmpty())
+                return buscaProfundidade(
+                    grafo,
+                    grafo.getIndexByVertice(verticeOrigem.vizinhos.keys.minBy { grafo.getIndexByVertice(it) }),
+                    indexDestino,
+                    null
+                )
 
-        if (vizinhosNaoVisitados.isEmpty())
-            return buscaProfundidade(
-                grafo,
-                grafo.getIndexByVertice(verticeOrigem.vizinhos.keys.minBy { grafo.getIndexByVertice(it) }),
-                indexDestino
-            )
+            val indexNextVertice = grafo.getIndexByVertice(vizinhosNaoVisitados.keys.first())
+            return buscaProfundidade(grafo, indexNextVertice, indexDestino, verticeOrigem)
+        } catch (e: Exception) {
+            return mutableListOf();
+        }
 
-        val indexNextVertice = grafo.getIndexByVertice(vizinhosNaoVisitados.keys.first())
-        return buscaProfundidade(grafo, indexNextVertice, indexDestino)
     }
 
-    fun buscaLargura(grafo: Grafo, indexOrigem: Int, indexDestino: Int): MutableSet<String> {
+    fun buscaLargura(grafo: Grafo, indexOrigem: Int, indexDestino: Int): MutableSet<Grafo.Vertice> {
         val verticeOrigem = grafo.getVerticeByIndex(indexOrigem) ?: return visitados
         val filaVertices = mutableListOf<Grafo.Vertice>()
-        visitados.add(verticeOrigem.nome)
+        visitados.add(verticeOrigem)
 
         filaVertices.add(verticeOrigem)
 
         while (filaVertices.isNotEmpty()) {
             val vertice = filaVertices.removeAt(0)
             for (vizinho in vertice.vizinhos.keys) {
-                if (!visitados.contains(vizinho.nome)) {
-                    visitados.add(vizinho.nome)
+                if (!visitados.contains(vizinho)) {
+                    visitados.add(vizinho)
                     if (grafo.getIndexByVertice(vizinho) == indexDestino || visitados.size == grafo.vertices.size) return visitados
                     filaVertices.add(vizinho)
                 }
@@ -57,10 +69,10 @@ class Busca {
 
         while (visitados.size != grafo.vertices.size) {
             val mapMinVertice = distancias
-                .filter { !visitados.contains(it.key.nome) }
+                .filter { !visitados.contains(it.key) }
                 .minBy { it.value }
 
-            visitados.add(mapMinVertice.key.nome)
+            visitados.add(mapMinVertice.key)
 
             for (vizinho in mapMinVertice.key.vizinhos) {
                 val distanciaNova: Int = distancias[mapMinVertice.key]?.plus(vizinho.value) ?: continue
@@ -76,5 +88,36 @@ class Busca {
         return distancias
     }
 
+    fun buscaProfundidadeMenorCaminho(
+        grafo: Grafo,
+        indexOrigem: Int,
+        indexDestino: Int,
+        anterior: Grafo.Vertice? = null
+    ): MutableList<Pair<Grafo.Vertice, Grafo.Vertice>> {
+        try {
+            val verticeOrigem = grafo.getVerticeByIndex(indexOrigem) ?: return caminho
+            if (anterior != null && visitados.contains(verticeOrigem)) return mutableListOf()
+
+            visitados.add(verticeOrigem)
+            if (anterior != null) caminho.add(Pair(anterior, verticeOrigem))
+            if (indexOrigem == indexDestino || visitados.size == grafo.vertices.size) return caminho
+
+            val vizinhosNaoVisitados = verticeOrigem.vizinhos.filter { !visitados.contains(it.key) }
+
+            if (vizinhosNaoVisitados.isEmpty())
+                return buscaProfundidade(
+                    grafo,
+                    grafo.getIndexByVertice(verticeOrigem.vizinhos.keys.filter { it != anterior }.minBy { grafo.getIndexByVertice(it) }),
+                    indexDestino,
+                    null
+                )
+
+            val indexNextVertice = grafo.getIndexByVertice(vizinhosNaoVisitados.keys.filter { it != anterior }.minBy { verticeOrigem.vizinhos[it] ?: Int.MAX_VALUE })
+            return buscaProfundidade(grafo, indexNextVertice, indexDestino, verticeOrigem)
+        } catch (e: Exception) {
+            return mutableListOf();
+        }
+
+    }
 
 }
