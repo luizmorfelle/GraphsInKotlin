@@ -13,8 +13,8 @@ class Leitor {
                     if (stringSplit.size < 2 || stringSplit.size > 4) throw Exception("Arquivo com formato inválido!\nErro na linha: $it")
 
                     if (stringSplit.size == 4) {
-                        for (i in 1..stringSplit[0].toInt()) {
-                            grafo.adicionarVertice((i + 64).toChar().toString())
+                        for (i in 0 until stringSplit[0].toInt()) {
+                            grafo.adicionarVertice(i.toString())
                         }
                         grafo.direcionado = stringSplit[2] == "1"
                         grafo.ponderado = stringSplit[3] == "1"

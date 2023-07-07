@@ -1,48 +1,15 @@
 fun main(args: Array<String>) {
     val g = getGrafo(true) ?: return
-//    println(Busca().buscaProfundidade(g,0,4))
-
-    println(FordFukerson.main(g, 0, 2))
-//    println(Busca().buscaProfundidade(g,0,12))
-//    println(Busca().dijkstra(g,0))
-//   println(Euler.getFacesEuler(g))
-//    g.getFaces().forEach {
-//        println(it.label)
-//    }
-//    Planaridade.verificaPlanaridade(g)
-//    Coloracao.welshPowell(g)
-//    g.vertices.forEach { it.cor = 0 }
-//    Coloracao.dsatur(g)
-//    println(if (g.existeAresta(0, 1)) "Aresta Existe" else "Aresta não existe")
-//    println(if (g.existeAresta(0, 100)) "Aresta Existe" else "Aresta não existe") // Index que não existe
-//
-//    println(g.retornarVizinhos(0))
-//    println(g.retornarVizinhos(10000)) // Index que não existe
-//    println(g.retornarIndicesVizinhos(0))
-//    println(g.retornarIndicesVizinhos(10000)) // Index que não existe
-//
-//
-//    println(g.pesoAresta(0, 1))
-//    println(g.pesoAresta(0, 1000)) // Index que não existe = 0
-//
-//    g.removerVertice("A")
-//    g.removerVertice("Z") // nome que não existe
-//
-//    g.imprimeGrafoLista()
-//    g.imprimeGrafoMatriz()
-//
-//    g.removerAresta(0, 1)
-//    g.removerAresta(0, 1000) // index não existe
-//
-//    g.imprimeGrafoLista()
-//    g.imprimeGrafoMatriz()
+    g.imprimeGrafo()
+    val icosiano = Icosiano(g)
+    icosiano.findHamiltonianPath()
 
 
 }
 
 fun getGrafo(byFile: Boolean): Grafo? {
     if (byFile) {
-        return Leitor().getGrafoByFile("slide2")
+        return Leitor().getGrafoByFile("icosiano")
     }
     val g = Grafo(direcionado = false, ponderado = false)
     g.adicionarVertice("A") //Inserir Vértice
